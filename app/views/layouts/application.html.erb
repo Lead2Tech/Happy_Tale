@@ -10,10 +10,21 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="bg-gray-50 text-gray-800">
+    <!-- 🌳 ナビゲーションバー -->
+    <nav class="bg-blue-500 text-white p-4 flex justify-between items-center shadow-md">
+      <div class="font-bold text-xl">🌳 Happy Tale</div>
+      <ul class="flex space-x-6 text-lg">
+        <li><%= link_to 'Home', root_path, class: "hover:underline" %></li>
+        <li><%= link_to 'Diaries', '#', class: "hover:underline" %></li>
+        <li><%= link_to 'Playgrounds', '#', class: "hover:underline" %></li>
+        <li><%= link_to 'Login', '#', class: "hover:underline" %></li>
+      </ul>
+    </nav>
+
+    <!-- 🌿 メインコンテンツ -->
+    <main class="container mx-auto mt-10 px-5">
       <%= yield %>
     </main>
-    <h1 class="text-3xl font-bold text-blue-600">Tailwind Test</h1>
   </body>
 </html>
