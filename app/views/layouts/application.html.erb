@@ -5,21 +5,43 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body class="bg-gray-50 text-gray-800">
     <!-- 🌳 ナビゲーションバー -->
-    <nav class="bg-blue-500 text-white p-4 flex justify-between items-center shadow-md">
-      <div class="font-bold text-xl">🌳 Happy Tale</div>
-      <ul class="flex space-x-6 text-lg">
-        <li><%= link_to 'Home', root_path, class: "hover:underline" %></li>
-        <li><%= link_to 'Diaries', '#', class: "hover:underline" %></li>
-        <li><%= link_to 'Playgrounds', '#', class: "hover:underline" %></li>
-        <li><%= link_to 'Login', '#', class: "hover:underline" %></li>
-      </ul>
+    <nav class="bg-amber-400 text-white shadow-md sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="font-bold text-2xl">🌳 Happy Tale</div>
+
+          <!-- デスクトップメニュー -->
+          <ul class="hidden md:flex space-x-6 text-lg font-medium">
+            <li><%= link_to 'Home', root_path, class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to 'Diaries', '#', class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to 'Playgrounds', '#', class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to 'Login', '#', class: "hover:text-amber-100 transition-colors" %></li>
+          </ul>
+
+          <!-- モバイルハンバーガーアイコン -->
+          <button id="menu-btn" class="md:hidden focus:outline-none">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- モバイルメニュー -->
+      <div id="mobile-menu" class="hidden md:hidden bg-amber-300 text-gray-800 px-6 pb-4 space-y-3">
+        <%= link_to 'Home', root_path, class: "block hover:text-amber-600" %>
+        <%= link_to 'Diaries', '#', class: "block hover:text-amber-600" %>
+        <%= link_to 'Playgrounds', '#', class: "block hover:text-amber-600" %>
+        <%= link_to 'Login', '#', class: "block hover:text-amber-600" %>
+      </div>
     </nav>
 
     <!-- 🌟 フラッシュメッセージ -->
@@ -29,8 +51,29 @@
     </div>
 
     <!-- 🌿 メインコンテンツ -->
-    <main class="container mx-auto mt-10 px-5">
-      <%= yield %>
+    <main class="container mx-auto mt-10 px-4 text-center">
+      <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+        親子の遊びと記録をつなぐ 🌳
+      </h1>
+      <p class="text-base md:text-lg text-gray-600 mb-10">
+        Happy Taleへようこそ！
+      </p>
+
+      <!-- 🎨 メインボタン群 -->
+      <div class="flex flex-col sm:flex-row sm:justify-center sm:space-x-6 space-y-4 sm:space-y-0 mt-8">
+        <%= link_to '🔍 遊び場を探す', '#', class: "bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+        <%= link_to '📝 日記を記録する', '#', class: "bg-amber-300 hover:bg-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+        <%= link_to '👤 ログイン / 新規登録', '#', class: "bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+      </div>
     </main>
+
+    <!-- 📱 ハンバーガーメニュー開閉スクリプト -->
+    <script>
+      const menuBtn = document.getElementById('menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      menuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    </script>
   </body>
 </html>
