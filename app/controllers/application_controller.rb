@@ -1,8 +1,9 @@
 class ApplicationController < ActionController::Base
+  layout "application"  # ✅ これを追加（Devise用レイアウトを避ける）
   before_action :set_host
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  layout :layout_by_resource
+  # layout :layout_by_resource
 
   private
 
