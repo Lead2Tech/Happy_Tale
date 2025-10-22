@@ -1,26 +1,26 @@
-<h2>Log in</h2>
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">👤 ログイン</h2>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), data: { turbo: false }) do |f| %>
+      <div class="mb-4">
+        <%= f.label :email, "メールアドレス", class: "block text-gray-700 mb-2" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email",
+          class: "w-full border-gray-300 rounded-lg shadow-sm focus:ring-amber-400 focus:border-amber-400" %>
+      </div>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
+      <div class="mb-6">
+        <%= f.label :password, "パスワード", class: "block text-gray-700 mb-2" %>
+        <%= f.password_field :password, autocomplete: "current-password",
+          class: "w-full border-gray-300 rounded-lg shadow-sm focus:ring-amber-400 focus:border-amber-400" %>
+      </div>
 
-  <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+      <%= f.submit "ログイン", class: "w-full bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 rounded-lg transition" %>
+    <% end %>
+
+    <div class="text-center mt-4 space-y-2">
+      <%= link_to "パスワードをお忘れですか？", new_password_path(resource_name), class: "text-amber-500 hover:underline" %><br>
+      <%= link_to "新規登録はこちら", new_user_registration_path, class: "text-amber-500 hover:underline" %>
     </div>
-  <% end %>
-
-  <div class="actions">
-    <%= f.submit "Log in" %>
   </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>
