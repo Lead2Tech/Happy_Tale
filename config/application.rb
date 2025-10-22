@@ -23,5 +23,8 @@ module HappyTale
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # ✅ ここを追記（全環境でURL生成のhostを指定）
+    Rails.application.routes.default_url_options[:host] = 'localhost:3000'
   end
 end
