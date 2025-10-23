@@ -1,3 +1,10 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
-import "@hotwired/turbo-rails"
+// 🚫 Turbo完全停止
 import "controllers"
+
+document.addEventListener("turbo:load", () => {
+  console.log("✅ Turbo load event fired")
+})
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("✅ DOM fully loaded (without Turbo)")
+})
