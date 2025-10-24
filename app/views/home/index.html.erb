@@ -1,18 +1,32 @@
-<div class="text-center mt-20 space-y-10">
-  <h1 class="text-4xl font-bold text-gray-800">親子の遊びと記録をつなぐ 🌳</h1>
-  <p class="text-lg text-gray-600">Happy Taleへようこそ！</p>
+<main class="container mx-auto mt-10 px-4 text-center relative z-0">
+  <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+    親子の遊びと記録をつなぐ 🌳
+  </h1>
+  <p class="text-base md:text-lg text-gray-600 mb-10">
+    Happy Taleへようこそ！
+  </p>
 
-  <div class="flex flex-col space-y-6 mt-10">
-    <%= link_to '🔍 遊び場を探す', '#', 
-        class: "bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg mx-auto w-72" %>
+  <!-- 🎨 メインボタン群 -->
+  <div class="flex flex-col sm:flex-row sm:justify-center sm:space-x-6 space-y-4 sm:space-y-0 mt-8">
+    <%= link_to '🔍 遊び場を探す', '#',
+        class: "relative z-10 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
 
     <% if user_signed_in? %>
       <%= link_to '📝 日記を記録する', new_diary_path,
-          class: "bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg mx-auto w-72" %>
+          class: "relative z-10 bg-amber-300 hover:bg-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+    <% else %>
+      <%= link_to '📝 日記を記録する', new_user_session_path,
+          data: { turbo: false },
+          class: "relative z-10 bg-amber-300 hover:bg-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+    <% end %>
+
+    <% if user_signed_in? %>
+      <%= link_to '👤 マイページ', '#',
+          class: "relative z-10 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
     <% else %>
       <%= link_to '👤 ログイン / 新規登録', new_user_session_path,
           data: { turbo: false },
-          class: "bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg mx-auto w-72" %>
+          class: "relative z-10 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
     <% end %>
   </div>
-</div>
+</main>
