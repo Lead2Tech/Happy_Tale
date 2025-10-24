@@ -11,7 +11,8 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50 text-gray-800">
+  <!-- ✅ Turbo無効化を追加 -->
+  <body class="bg-gray-50 text-gray-800" data-turbo="false">
     <!-- 🌳 ナビゲーションバー -->
     <nav class="bg-amber-400 text-white shadow-md sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,7 +25,7 @@
             <li><%= link_to 'Playgrounds', '#', class: "hover:text-amber-100 transition-colors" %></li>
 
             <% if user_signed_in? %>
-              <!-- ✅ 修正版：button_to に変更 -->
+              <!-- ✅ Logoutをbutton_toで安全に実装 -->
               <li>
                 <%= button_to 'Logout', destroy_user_session_path,
                     method: :delete,
@@ -51,7 +52,6 @@
       <div id="mobile-menu" class="hidden md:hidden bg-amber-300 text-gray-800 px-6 pb-4 space-y-3">
         <%= link_to 'Home', root_path, class: "block hover:text-amber-600" %>
         <% if user_signed_in? %>
-          <!-- ✅ 同じく button_to に変更 -->
           <%= button_to 'Logout', destroy_user_session_path,
               method: :delete,
               data: { turbo: false, confirm: "ログアウトしますか？" },
