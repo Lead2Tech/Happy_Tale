@@ -10,13 +10,17 @@
           <div class="text-sm text-gray-400 mb-3">
             投稿日：<%= diary.created_at.strftime('%Y/%m/%d') %>
           </div>
+
           <div class="flex space-x-4">
             <%= link_to '👀 詳細', diary_path(diary), class: "text-blue-500 hover:underline" %>
             <%= link_to '✏️ 編集', edit_diary_path(diary), class: "text-amber-500 hover:underline" %>
-            <%= link_to '🗑️ 削除', diary_path(diary),
-                        method: :delete,
-                        data: { confirm: "削除してもよろしいですか？" },
-                        class: "text-red-500 hover:underline" %>
+            
+            <!-- ✅ Turbo対応版 削除リンク -->
+            <%= button_to '🗑️ 削除', diary_path(diary),
+                method: :delete,
+                data: { action: "click->confirm#confirm", confirmMessageValue: "本当に削除しますか？" },
+                form: { class: "inline" },
+                class: "text-red-500 hover:underline cursor-pointer" %>
           </div>
         </div>
       <% end %>

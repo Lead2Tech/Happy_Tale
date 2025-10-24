@@ -11,8 +11,8 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <!-- ✅ Turbo無効化を追加 -->
-  <body class="bg-gray-50 text-gray-800" data-turbo="false">
+  <!-- ✅ Turboを有効化（data-turbo="false"を削除） -->
+  <body class="bg-gray-50 text-gray-800">
     <!-- 🌳 ナビゲーションバー -->
     <nav class="bg-amber-400 text-white shadow-md sticky top-0 z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,17 +25,17 @@
             <li><%= link_to 'Playgrounds', '#', class: "hover:text-amber-100 transition-colors" %></li>
 
             <% if user_signed_in? %>
-              <!-- ✅ Logoutをbutton_toで安全に実装 -->
+              <!-- ✅ Logoutボタン -->
               <li>
                 <%= button_to 'Logout', destroy_user_session_path,
                     method: :delete,
-                    data: { turbo: false, confirm: "ログアウトしますか？" },
+                    data: { turbo_confirm: "ログアウトしますか？" },
                     form: { class: "inline" },
                     class: "hover:text-amber-100 transition-colors bg-transparent border-none cursor-pointer" %>
               </li>
             <% else %>
-              <li><%= link_to 'Login', new_user_session_path, data: { turbo: false }, class: "hover:text-amber-100 transition-colors" %></li>
-              <li><%= link_to 'Sign Up', new_user_registration_path, data: { turbo: false }, class: "hover:text-amber-100 transition-colors" %></li>
+              <li><%= link_to 'Login', new_user_session_path, class: "hover:text-amber-100 transition-colors" %></li>
+              <li><%= link_to 'Sign Up', new_user_registration_path, class: "hover:text-amber-100 transition-colors" %></li>
             <% end %>
           </ul>
 
@@ -54,12 +54,12 @@
         <% if user_signed_in? %>
           <%= button_to 'Logout', destroy_user_session_path,
               method: :delete,
-              data: { turbo: false, confirm: "ログアウトしますか？" },
+              data: { turbo_confirm: "ログアウトしますか？" },
               form: { class: "inline" },
               class: "block hover:text-amber-600 bg-transparent border-none cursor-pointer text-left w-full" %>
         <% else %>
-          <%= link_to 'Login', new_user_session_path, data: { turbo: false }, class: "block hover:text-amber-600" %>
-          <%= link_to 'Sign Up', new_user_registration_path, data: { turbo: false }, class: "block hover:text-amber-600" %>
+          <%= link_to 'Login', new_user_session_path, class: "block hover:text-amber-600" %>
+          <%= link_to 'Sign Up', new_user_registration_path, class: "block hover:text-amber-600" %>
         <% end %>
       </div>
     </nav>

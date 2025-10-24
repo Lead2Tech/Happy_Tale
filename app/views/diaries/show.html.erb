@@ -16,11 +16,15 @@
   </div>
 
   <div class="flex justify-between mt-10">
+    <!-- ✏️ 編集ボタン -->
     <%= link_to "✏️ 編集する", edit_diary_path(@diary),
         class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:-translate-y-0.5" %>
 
-    <%= link_to "🗑 削除する", diary_path(@diary),
-        data: { turbo_method: :delete, confirm: "本当に削除しますか？" },
+    <!-- 🗑️ 削除ボタン（赤バージョン） -->
+    <%= button_to '🗑️ 削除', diary_path(@diary),
+        method: :delete,
+        data: { confirm: '本当に削除しますか？' },
+        form: { class: "inline" },
         class: "bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg shadow-md transition transform hover:-translate-y-0.5" %>
   </div>
 

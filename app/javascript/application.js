@@ -1,10 +1,7 @@
-// 🚫 Turbo完全停止
+// app/javascript/application.js
+import "@hotwired/turbo-rails"
 import "controllers"
 
 document.addEventListener("turbo:load", () => {
-  console.log("✅ Turbo load event fired")
-})
-
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("✅ DOM fully loaded (without Turbo)")
+  console.log("✅ Turbo loaded!")
 })
