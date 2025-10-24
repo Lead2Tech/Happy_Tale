@@ -1,4 +1,32 @@
-<div>
-  <h1 class="font-bold text-4xl">Diaries#index</h1>
-  <p>Find me in app/views/diaries/index.html.erb</p>
+<div class="max-w-4xl mx-auto mt-12 px-6">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">📖 あなたの日記一覧</h1>
+
+  <% if @diaries.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <% @diaries.each do |diary| %>
+        <div class="bg-white shadow-md rounded-xl p-6 text-left border border-gray-100 hover:shadow-lg transition">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2"><%= diary.title.presence || "（タイトルなし）" %></h2>
+          <p class="text-gray-600 mb-4"><%= truncate(diary.content, length: 100) %></p>
+          <div class="text-sm text-gray-400 mb-3">
+            投稿日：<%= diary.created_at.strftime('%Y/%m/%d') %>
+          </div>
+          <div class="flex space-x-4">
+            <%= link_to '👀 詳細', diary_path(diary), class: "text-blue-500 hover:underline" %>
+            <%= link_to '✏️ 編集', edit_diary_path(diary), class: "text-amber-500 hover:underline" %>
+            <%= link_to '🗑️ 削除', diary_path(diary),
+                        method: :delete,
+                        data: { confirm: "削除してもよろしいですか？" },
+                        class: "text-red-500 hover:underline" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">まだ日記がありません。</p>
+  <% end %>
+
+  <div class="text-center mt-10">
+    <%= link_to '📝 新しい日記を書く', new_diary_path,
+        class: "inline-block bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition" %>
+  </div>
 </div>

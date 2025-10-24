@@ -2,11 +2,13 @@ class DiariesController < ApplicationController
   before_action :authenticate_user!  # ログイン必須にする
 
   def index
-    @diaries = Diary.all
+    # ✅ 自分の投稿だけを一覧表示（他人の投稿は見えない）
+    @diaries = current_user.diaries.order(created_at: :desc)
   end
 
   def show
-    @diary = Diary.find(params[:id])
+    # ✅ 他人の日記を直接URLで見れないようにする
+    @diary = current_user.diaries.find(params[:id])
   end
 
   def new
@@ -16,7 +18,8 @@ class DiariesController < ApplicationController
   def create
     @diary = current_user.diaries.build(diary_params)
     if @diary.save
-      redirect_to @diary, notice: "日記を投稿しました！"
+      # ✅ 投稿完了後は一覧ページに戻る
+      redirect_to diaries_path, notice: "日記を投稿しました！"
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +32,7 @@ class DiariesController < ApplicationController
   def update
     @diary = current_user.diaries.find(params[:id])
     if @diary.update(diary_params)
-      redirect_to @diary, notice: "日記を更新しました！"
+      redirect_to diaries_path, notice: "日記を更新しました！"
     else
       render :edit, status: :unprocessable_entity
     end
