@@ -1,0 +1,26 @@
+<div class="max-w-4xl mx-auto mt-12 px-6">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏞 遊び場を検索</h1>
+
+  <!-- 🔍 検索フォーム -->
+  <%= form_with url: playgrounds_path, method: :get, local: true, class: "mb-6 text-center" do |f| %>
+    <%= f.text_field :q, placeholder: "公園名やエリアで検索", class: "border rounded p-2 w-1/2" %>
+    <%= f.submit "検索", class: "bg-amber-400 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded ml-2" %>
+  <% end %>
+
+  <!-- 🧭 検索結果一覧 -->
+  <% if @playgrounds.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <% @playgrounds.each do |pg| %>
+        <div class="bg-white shadow-md rounded-xl p-6 text-left border border-gray-100 hover:shadow-lg transition">
+          <h2 class="text-xl font-semibold text-gray-800 mb-2"><%= pg.name %></h2>
+          <p class="text-gray-600 mb-2"><%= pg.address %></p>
+          <p class="text-sm text-gray-500 mb-3"><%= truncate(pg.description, length: 80) %></p>
+
+          <%= link_to "👀 詳細を見る", playground_path(pg), class: "text-blue-500 hover:underline" %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-center text-gray-500 mt-10">該当する遊び場はありません。</p>
+  <% end %>
+</div>
