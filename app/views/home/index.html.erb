@@ -8,7 +8,9 @@
 
   <!-- 🎨 メインボタン群 -->
   <div class="flex flex-col sm:flex-row sm:justify-center sm:space-x-6 space-y-4 sm:space-y-0 mt-8">
-    <%= link_to '🔍 遊び場を探す', '#',
+
+    <!-- ✅ 修正：遊び場検索ボタンが /playgrounds に遷移 -->
+    <%= link_to '🔍 遊び場を探す', playgrounds_path,
         class: "relative z-10 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
 
     <% if user_signed_in? %>
