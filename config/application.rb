@@ -1,5 +1,4 @@
 require_relative "boot"
-
 require "rails/all"
 
 # Require the gems listed in Gemfile, including any gems
@@ -11,20 +10,13 @@ module HappyTale
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
-    # Please, add to the `ignore` list any other `lib` subdirectories that do
-    # not contain `.rb` files, or that should not be reloaded or eager loaded.
-    # Common ones are `templates`, `generators`, or `middleware`, for example.
+    # lib配下のautoload設定
     config.autoload_lib(ignore: %w(assets tasks))
 
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-
-    # ✅ ここを追記（全環境でURL生成のhostを指定）
+    # URL生成時のデフォルトホストを設定（開発環境用）
     Rails.application.routes.default_url_options[:host] = 'localhost:3000'
   end
 end
+
+# ✅ 環境変数を読み込む（ここが大事！Applicationクラスの外）
+Dotenv::Railtie.load if defined?(Dotenv)

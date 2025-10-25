@@ -10,8 +10,33 @@ class PlaygroundsController < ApplicationController
     end
   end
 
-  def show; end
-  def new; @playground = Playground.new; end
+  def show
+  require 'net/http'
+  require 'json'
+
+  if @playground.name.present?
+    url = URI("https://places.googleapis.com/v1/places:searchText")
+    https = Net::HTTP.new(url.host, url.port)
+    https.use_ssl = true
+
+    request = Net::HTTP::Post.new(url)
+    request["Content-Type"] = "application/json"
+    request["X-Goog-Api-Key"] = ENV["GOOGLE_MAPS_API_KEY"]
+    request["X-Goog-FieldMask"] = "places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.photos"  # ←これ重要！
+    request.body = { textQuery: @playground.name }.to_json
+
+    response = https.request(request)
+    data = JSON.parse(response.body)
+
+    puts "📡 Google API Response: #{data.inspect}" # ←ログ確認用（ターミナルで見える）
+    @place = data["places"]&.first
+  end
+end
+
+
+  def new
+    @playground = Playground.new
+  end
 
   def create
     @playground = Playground.new(playground_params)
