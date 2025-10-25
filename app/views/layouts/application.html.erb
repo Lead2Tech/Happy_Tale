@@ -11,7 +11,6 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <!-- ✅ Turboを有効化（data-turbo="false"を削除） -->
   <body class="bg-gray-50 text-gray-800">
     <!-- 🌳 ナビゲーションバー -->
     <nav class="bg-amber-400 text-white shadow-md sticky top-0 z-50">
@@ -22,10 +21,9 @@
           <ul class="hidden md:flex space-x-6 text-lg font-medium">
             <li><%= link_to 'Home', root_path, class: "hover:text-amber-100 transition-colors" %></li>
             <li><%= link_to 'Diaries', diaries_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to 'Playgrounds', '#', class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to 'Playgrounds', playgrounds_path, class: "hover:text-amber-100 transition-colors" %></li>
 
             <% if user_signed_in? %>
-              <!-- ✅ Logoutボタン -->
               <li>
                 <%= button_to 'Logout', destroy_user_session_path,
                     method: :delete,
@@ -84,6 +82,11 @@
           });
         }
       });
+    </script>
+
+    <!-- ✅ Google Maps JavaScript API -->
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap">
     </script>
   </body>
 </html>
