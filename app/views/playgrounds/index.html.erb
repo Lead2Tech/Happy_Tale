@@ -9,9 +9,12 @@
   <% end %>
 
   <!-- 🗺 Google Map 表示エリア -->
-<div id="map" style="height: 400px; width: 100%;" class="rounded-lg shadow-md border border-gray-200 mb-8"></div>
-        
-
+  <div id="map"
+     style="height: 400px; width: 100%;"
+     class="rounded-lg shadow-md border border-gray-200 mb-8"
+     data-playgrounds='<%= @playgrounds.to_json.html_safe %>'>
+  </div>
+  
   <!-- 🧭 検索結果一覧 -->
   <% if @playgrounds.present? %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,34 +31,3 @@
     <p class="text-center text-gray-500 mt-10">該当する遊び場はありません。</p>
   <% end %>
 </div>
-
-<!-- ✅ Google Mapsを初期化するスクリプト -->
-<script>
-  function initMap() {
-    console.log("✅ initMap loaded!");
-
-    // 🗺️ マップを初期化（東京タワーを中央に仮設定）
-    const map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: 35.6586, lng: 139.7454 },
-      zoom: 12,
-    });
-
-    // ✅ Railsから遊び場データをJSへ渡す
-    const playgrounds = <%= @playgrounds.to_json.html_safe %>;
-
-    playgrounds.forEach(pg => {
-      if (pg.address) {
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({ address: pg.address }, (results, status) => {
-          if (status === "OK" && results[0]) {
-            new google.maps.Marker({
-              position: results[0].geometry.location,
-              map: map,
-              title: pg.name,
-            });
-          }
-        });
-      }
-    });
-  }
-</script>

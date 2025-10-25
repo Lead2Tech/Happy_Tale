@@ -1,4 +1,33 @@
-<div>
-  <h1 class="font-bold text-4xl">Playgrounds#show</h1>
-  <p>Find me in app/views/playgrounds/show.html.erb</p>
+<div class="max-w-3xl mx-auto mt-12 bg-white p-8 rounded-xl shadow">
+  <h1 class="text-3xl font-bold text-gray-800 mb-4"><%= @playground.name %></h1>
+  <p class="text-gray-600 mb-2">📍 <%= @playground.address %></p>
+  <p class="text-gray-500 mb-6"><%= @playground.description %></p>
+
+  <% if @place.present? %>
+    <div class="border-t pt-4 mt-4">
+      <h2 class="text-xl font-semibold mb-2">🌍 Google情報</h2>
+      <p>🗺️ 住所: <%= @place["formattedAddress"] %></p>
+      <p>⭐ 評価: <%= @place["rating"] || "情報なし" %> / 5</p>
+      <p>💬 口コミ件数: <%= @place["userRatingCount"] || "不明" %></p>
+      <% if @place["photos"]&.any? %>
+        <img src="https://places.googleapis.com/v1/<%= @place["photos"].first["name"] %>/media?maxHeightPx=400&key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>" 
+             alt="施設写真" class="rounded-lg mt-3">
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-gray-400 mt-6">Googleの詳細情報は見つかりませんでした。</p>
+  <% end %>
+
+  <div id="map" class="w-full h-96 mt-6 rounded-lg shadow"></div>
 </div>
+
+<script>
+  function initMap() {
+    const location = { lat: 35.681236, lng: 139.767125 }; // 仮で東京駅
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 14,
+      center: location,
+    });
+    new google.maps.Marker({ position: location, map: map });
+  }
+</script>
