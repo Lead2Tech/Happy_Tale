@@ -15,7 +15,7 @@ function initMap() {
   const currentLocationBtn = document.getElementById("current-location-btn");
   if (!currentLocationBtn) return;
 
-  // 📍 現在地ボタンを押したとき
+  // 📍 現在地ボタンがクリックされたとき
   currentLocationBtn.addEventListener("click", async () => {
     console.log("📍 ボタンがクリックされました！");
 
@@ -24,7 +24,9 @@ function initMap() {
       return;
     }
 
-    // 📡 現在地取得
+    // ⏳ タイムアウト設定付きで現在地取得
+    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
@@ -32,19 +34,17 @@ function initMap() {
         console.log("✅ 現在地取得:", lat, lng);
 
         const currentPosition = { lat, lng };
-
-        // ✅ 地図の中心とズームを移動
         map.setCenter(currentPosition);
-        map.setZoom(14);
+        map.setZoom(15);
 
-        // ✅ 現在地マーカー（青丸）
+        // ✅ 現在地マーカー（AdvancedMarkerElement使用）
         new google.maps.marker.AdvancedMarkerElement({
           map,
           position: currentPosition,
           title: "あなたの現在地",
         });
 
-        // ✅ Rails APIへアクセス
+        // ✅ RailsのAPIにリクエスト
         const url = `/playgrounds/nearby?lat=${lat}&lng=${lng}`;
         console.log("🌐 Fetching:", url);
 
@@ -54,9 +54,9 @@ function initMap() {
           const data = await res.json();
           console.log("🎯 周辺の遊び場データ:", data);
 
-          // ✅ 既存マーカー削除
+          // 🔄 既存マーカー削除
           if (window.playgroundMarkers) {
-            window.playgroundMarkers.forEach(m => m.map = null);
+            window.playgroundMarkers.forEach((m) => m.map = null);
           }
           window.playgroundMarkers = [];
 
@@ -66,45 +66,42 @@ function initMap() {
 
               const position = {
                 lat: place.geometry.location.lat,
-                lng: place.geometry.location.lng
+                lng: place.geometry.location.lng,
               };
 
-              // 📍 通常マーカー
+              // ✅ 遊び場マーカーをAdvancedMarkerElementで追加
               const marker = new google.maps.marker.AdvancedMarkerElement({
                 map,
                 position,
                 title: place.name,
               });
 
-              // 🏷️ 吹き出し内容
+              // 🏷️ 吹き出し情報
+              const photoHtml = place.photo_url
+                ? `<img src="${place.photo_url}" alt="${place.name}" class="w-full h-24 object-cover rounded mb-1">`
+                : "";
+
+              const ratingHtml = place.rating
+                ? `⭐ ${place.rating}（${place.user_ratings_total || 0}件）`
+                : "評価なし";
+
               const infoWindow = new google.maps.InfoWindow({
                 content: `
                   <div style="max-width:230px">
-                    <strong style="font-size:14px;">${place.name || "施設名不明"}</strong><br>
-                    ${
-                      place.photo_url
-                        ? `<img src="${place.photo_url}" width="220" style="margin-top:5px;border-radius:8px;">`
-                        : `<div style="background:#eee;height:120px;width:220px;display:flex;align-items:center;justify-content:center;border-radius:8px;">📷 No Image</div>`
-                    }
-                    <div style="margin-top:6px;font-size:13px;">
-                      ⭐️ ${place.rating || "N/A"}（${place.user_ratings_total || 0}件）<br>
-                      📍 ${place.address || "住所情報なし"}<br>
-                      <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" 
-                         target="_blank"
-                         style="color:#1a73e8;text-decoration:underline;display:inline-block;margin-top:4px;">
-                         Googleマップで見る
-                      </a>
-                    </div>
+                    ${photoHtml}
+                    <strong>${place.name}</strong><br>
+                    <small>${place.address || "住所情報なし"}</small><br>
+                    <span>${ratingHtml}</span><br>
+                    <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}"
+                       target="_blank" class="text-blue-500 hover:underline">Googleマップで見る</a>
                   </div>
                 `,
               });
 
-              // 📌 クリックでInfoWindowを開く
               marker.addListener("click", () => {
-                infoWindow.open({ map, anchor: marker });
+                infoWindow.open(map, marker);
               });
 
-              // 🧩 グローバル配列に追加
               window.playgroundMarkers.push(marker);
             });
           } else {
@@ -117,16 +114,32 @@ function initMap() {
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
-        alert("位置情報を取得できませんでした。");
-      }
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert("位置情報の利用が拒否されました。");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("位置情報を取得できませんでした（信号なし）。");
+            break;
+          case error.TIMEOUT:
+            alert("位置情報の取得がタイムアウトしました。");
+            break;
+          default:
+            alert("不明なエラーが発生しました。");
+        }
+      },
+      options
     );
   });
 }
 
 // ✅ Turbo対応（Railsで必須）
 document.addEventListener("turbo:load", () => {
+  console.log("⚡ turbo:load 発火");
   if (typeof google !== "undefined") {
     initMap();
+  } else {
+    console.warn("⚠️ google undefined");
   }
 });
 
