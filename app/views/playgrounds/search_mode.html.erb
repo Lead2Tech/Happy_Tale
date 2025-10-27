@@ -13,14 +13,8 @@
     <%= link_to "📍 現在地から探す", playgrounds_path(lat: "current", lng: "current"),
       class: "w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-6 sm:py-8 rounded-2xl shadow-lg text-lg sm:text-xl transition transform hover:-translate-y-1 active:translate-y-0.5" %>
 
-    <!-- ワード検索 -->
-    <%= link_to "🔤 キーワードで探す", playgrounds_path,
-      class: "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 sm:py-8 rounded-2xl shadow-lg text-lg sm:text-xl transition transform hover:-translate-y-1 active:translate-y-0.5" %>
-  </div>
-
-  <!-- 戻るボタン -->
-  <div class="mt-10">
-    <%= link_to "← トップに戻る", root_path,
-      class: "text-gray-500 hover:text-gray-700 text-sm md:text-base underline" %>
+    <!-- ホームに戻る -->
+    <%= link_to "🏠 ホームに戻る", root_path,
+      class: "w-full bg-amber-400 hover:bg-amber-500 text-white font-semibold py-6 sm:py-8 rounded-2xl shadow-lg text-lg sm:text-xl transition transform hover:-translate-y-1 active:translate-y-0.5" %>
   </div>
 </div>
