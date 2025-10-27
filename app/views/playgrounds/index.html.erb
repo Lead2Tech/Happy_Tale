@@ -22,8 +22,12 @@
        class="rounded-lg shadow-md border border-gray-200 mb-8"
        data-playgrounds='<%= @playgrounds.to_json.html_safe %>'>
   </div>
-  
-  <!-- 🧭 検索結果一覧 -->
+
+  <!-- ✅ 徒歩10分以内の検索結果 -->
+  <h2 class="text-lg font-bold mb-2 text-gray-800">徒歩10分以内の遊び場</h2>
+  <div id="results-container" class="space-y-3 mb-10"></div>
+
+  <!-- 🧭 通常の検索結果一覧 -->
   <% if @playgrounds.present? %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <% @playgrounds.each do |pg| %>
