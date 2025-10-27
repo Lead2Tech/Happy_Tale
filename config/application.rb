@@ -10,6 +10,8 @@ module HappyTale
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
 
+    config.i18n.default_locale = :ja
+
     # lib配下のautoload設定
     config.autoload_lib(ignore: %w(assets tasks))
 
