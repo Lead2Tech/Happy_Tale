@@ -12,14 +12,31 @@ function initMap() {
   });
 
   const currentLocationBtn = document.getElementById("current-location-btn");
+  const resultsContainer = document.getElementById("results-container");
+
+  // 🟡 新しい表示位置（ボタン下に出したいので取得）
+  const loadingMessageContainer = currentLocationBtn.parentElement;
   if (!currentLocationBtn) return;
 
   // 📍 現在地ボタンがクリックされたとき
   currentLocationBtn.addEventListener("click", async () => {
     console.log("📍 ボタンがクリックされました！");
 
+    // ✅ ボタン下にローディングメッセージ表示
+    let loadingMessage = document.getElementById("loading-message");
+    if (!loadingMessage) {
+      loadingMessage = document.createElement("p");
+      loadingMessage.id = "loading-message";
+      loadingMessage.className =
+        "text-center text-gray-600 mt-3 animate-pulse";
+      loadingMessage.textContent =
+        "🌍 現在地を取得しています… マップが表示されるまで少しお待ちください。";
+      loadingMessageContainer.appendChild(loadingMessage);
+    }
+
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません。");
+      loadingMessage.remove();
       return;
     }
 
@@ -36,10 +53,13 @@ function initMap() {
         map.setZoom(15);
 
         // ✅ 現在地マーカー（青丸）
-        new google.maps.marker.AdvancedMarkerElement({
+        new google.maps.Marker({
           map,
           position: currentPosition,
           title: "あなたの現在地",
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          },
         });
 
         // ✅ Rails API呼び出し
@@ -54,12 +74,12 @@ function initMap() {
 
           // 既存マーカー削除
           if (window.playgroundMarkers) {
-            window.playgroundMarkers.forEach((m) => (m.map = null));
+            window.playgroundMarkers.forEach((m) => m.setMap(null));
           }
           window.playgroundMarkers = [];
 
           if (Array.isArray(data) && data.length > 0) {
-            // ✅ 徒歩10分（約1km）以内のみに絞る
+            // ✅ 徒歩10分（約1km）以内に絞る
             const nearby = data.filter((place) => {
               if (!place.geometry?.location) return false;
               const d = getDistanceFromLatLng(
@@ -68,10 +88,10 @@ function initMap() {
                 place.geometry.location.lat,
                 place.geometry.location.lng
               );
-              return d <= 1000; // 1km以内のみ
+              return d <= 1000;
             });
 
-            // ✅ 近い順にソート（★追加部分★）
+            // ✅ 近い順にソート
             const nearbySorted = nearby
               .map((place) => {
                 const d = getDistanceFromLatLng(
@@ -86,14 +106,14 @@ function initMap() {
 
             renderResultsList(nearbySorted);
 
-            // ✅ マーカー生成
+            // ✅ マーカー生成（赤ピン）
             nearbySorted.forEach((place) => {
               const position = {
                 lat: place.geometry.location.lat,
                 lng: place.geometry.location.lng,
               };
 
-              const marker = new google.maps.marker.AdvancedMarkerElement({
+              const marker = new google.maps.Marker({
                 map,
                 position,
                 title: place.name,
@@ -124,17 +144,23 @@ function initMap() {
               window.playgroundMarkers.push(marker);
             });
           } else {
-            console.log("🎈 近くに遊び場データなし（表示はスキップ）");
-            // 表示やアラートは出さず、静かに処理を終える
+            resultsContainer.innerHTML = `
+              <p class="text-center text-gray-500 mt-4">
+                🎈 近くに遊び場データが見つかりませんでした。
+              </p>
+            `;
           }
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
           alert("遊び場情報の取得に失敗しました。");
+        } finally {
+          if (loadingMessage) loadingMessage.remove();
         }
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
         alert("位置情報を取得できませんでした。");
+        if (loadingMessage) loadingMessage.remove();
       },
       options
     );
@@ -143,7 +169,7 @@ function initMap() {
 
 // ✅ 徒歩距離計算（Haversine formula）
 function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
-  const R = 6371e3; // Earth radius in meters
+  const R = 6371e3;
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
@@ -154,10 +180,10 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  return R * c; // 距離（m）
+  return R * c;
 }
 
-// ✅ 一覧をレンダリング（距離付きに変更）
+// ✅ 一覧をレンダリング
 function renderResultsList(data) {
   const container = document.getElementById("results-container");
   if (!container) return;
