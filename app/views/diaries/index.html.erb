@@ -1,27 +1,28 @@
 <div class="max-w-4xl mx-auto mt-12 px-6">
   <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">📖 あなたの日記一覧</h1>
 
+  <!-- 📝 日記作成ボタン（タイトル下に配置） -->
+  <div class="text-center mb-8">
+    <%= link_to '📝 新しい日記を書く', new_diary_path,
+        class: "inline-block bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition" %>
+  </div>
+
   <% if @diaries.any? %>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <% @diaries.each do |diary| %>
         <div class="bg-white shadow-md rounded-xl p-6 text-left border border-gray-100 hover:shadow-lg transition">
-          <h2 class="text-xl font-semibold text-gray-800 mb-2"><%= diary.title.presence || "（タイトルなし）" %></h2>
+          <h2 class="text-xl font-semibold text-gray-800 mb-2">
+            <%= diary.title.presence || "（タイトルなし）" %>
+          </h2>
           <p class="text-gray-600 mb-4"><%= truncate(diary.content, length: 100) %></p>
 
-          <!-- ✅ 修正箇所：訪問日を表示 -->
           <div class="text-sm text-gray-400 mb-3">
-            訪問日：
-            <% if diary.visited_at.present? %>
-              <%= diary.visited_at.strftime('%Y/%m/%d') %>
-            <% else %>
-              不明
-            <% end %>
+            訪問日：<%= diary.visited_at.present? ? diary.visited_at.strftime('%Y/%m/%d') : '不明' %>
           </div>
 
           <div class="flex space-x-4">
             <%= link_to '👀 詳細', diary_path(diary), class: "text-blue-500 hover:underline" %>
             <%= link_to '✏️ 編集', edit_diary_path(diary), class: "text-amber-500 hover:underline" %>
-            
             <%= button_to '🗑️ 削除', diary_path(diary),
                 method: :delete,
                 data: { action: "click->confirm#confirm", confirmMessageValue: "本当に削除しますか？" },
@@ -34,9 +35,4 @@
   <% else %>
     <p class="text-center text-gray-500 mt-10">まだ日記がありません。</p>
   <% end %>
-
-  <div class="text-center mt-10">
-    <%= link_to '📝 新しい日記を書く', new_diary_path,
-        class: "inline-block bg-amber-400 hover:bg-amber-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition" %>
-  </div>
 </div>
