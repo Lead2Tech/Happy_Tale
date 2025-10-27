@@ -89,8 +89,10 @@
 
     <!-- ✅ その後でGoogle Maps APIを読み込む（callbackでinitMapを呼ぶ） -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap"
-      async defer>
+     src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker"
+      async
+      defer>
     </script>
+
   </body>
 </html>

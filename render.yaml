@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: happy-tale
+    env: ruby
+    buildCommand: bundle install && bundle exec rake assets:precompile
+    startCommand: bundle exec puma -C config/puma.rb
+    envVars:
+      - key: RAILS_ENV
+        value: production
+    postDeployCommand: bundle exec rails db:migrate
