@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   get "home/index"
 
   # 🗺 遊び場
-  get "playgrounds/search_mode", to: "playgrounds#search_mode"  # ← これを上に！
+  get "playgrounds/search_mode", to: "playgrounds#search_mode"
+  get "playgrounds/nearby", to: "playgrounds#nearby"  # ← ✅ これを追加！
   resources :playgrounds
 
   # 📔 日記
