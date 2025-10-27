@@ -38,18 +38,10 @@ function initMap() {
         map.setZoom(14);
 
         // ✅ 現在地マーカー（青丸）
-        new google.maps.Marker({
+        new google.maps.marker.AdvancedMarkerElement({
           map,
           position: currentPosition,
           title: "あなたの現在地",
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: "#4285F4",
-            fillOpacity: 1,
-            strokeColor: "white",
-            strokeWeight: 2,
-          },
         });
 
         // ✅ Rails APIへアクセス
@@ -62,9 +54,9 @@ function initMap() {
           const data = await res.json();
           console.log("🎯 周辺の遊び場データ:", data);
 
-          // ✅ 既存マーカー削除対策（新しい検索時）
+          // ✅ 既存マーカー削除
           if (window.playgroundMarkers) {
-            window.playgroundMarkers.forEach(m => m.setMap(null));
+            window.playgroundMarkers.forEach(m => m.map = null);
           }
           window.playgroundMarkers = [];
 
@@ -78,24 +70,38 @@ function initMap() {
               };
 
               // 📍 通常マーカー
-              const marker = new google.maps.Marker({
+              const marker = new google.maps.marker.AdvancedMarkerElement({
                 map,
                 position,
                 title: place.name,
               });
 
-              // 🏷️ 吹き出し（施設名＋住所）
+              // 🏷️ 吹き出し内容
               const infoWindow = new google.maps.InfoWindow({
                 content: `
-                  <div style="max-width:200px">
-                    <strong>${place.name}</strong><br>
-                    ${place.vicinity || place.formatted_address || "住所情報なし"}
+                  <div style="max-width:230px">
+                    <strong style="font-size:14px;">${place.name || "施設名不明"}</strong><br>
+                    ${
+                      place.photo_url
+                        ? `<img src="${place.photo_url}" width="220" style="margin-top:5px;border-radius:8px;">`
+                        : `<div style="background:#eee;height:120px;width:220px;display:flex;align-items:center;justify-content:center;border-radius:8px;">📷 No Image</div>`
+                    }
+                    <div style="margin-top:6px;font-size:13px;">
+                      ⭐️ ${place.rating || "N/A"}（${place.user_ratings_total || 0}件）<br>
+                      📍 ${place.address || "住所情報なし"}<br>
+                      <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}" 
+                         target="_blank"
+                         style="color:#1a73e8;text-decoration:underline;display:inline-block;margin-top:4px;">
+                         Googleマップで見る
+                      </a>
+                    </div>
                   </div>
                 `,
               });
 
+              // 📌 クリックでInfoWindowを開く
               marker.addListener("click", () => {
-                infoWindow.open(map, marker);
+                infoWindow.open({ map, anchor: marker });
               });
 
               // 🧩 グローバル配列に追加
