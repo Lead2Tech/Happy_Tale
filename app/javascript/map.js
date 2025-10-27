@@ -5,7 +5,6 @@ function initMap() {
   const mapDiv = document.getElementById("map");
   if (!mapDiv) return;
 
-  // 🗺️ 地図の初期設定（東京駅付近）
   const map = new google.maps.Map(mapDiv, {
     center: { lat: 35.681236, lng: 139.767125 },
     zoom: 10,
@@ -24,7 +23,6 @@ function initMap() {
       return;
     }
 
-    // ⏳ タイムアウト設定付きで現在地取得
     const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
 
     navigator.geolocation.getCurrentPosition(
@@ -44,7 +42,7 @@ function initMap() {
           title: "あなたの現在地",
         });
 
-        // ✅ RailsのAPIにリクエスト
+        // ✅ Rails API呼び出し
         const url = `/playgrounds/nearby?lat=${lat}&lng=${lng}`;
         console.log("🌐 Fetching:", url);
 
@@ -54,29 +52,53 @@ function initMap() {
           const data = await res.json();
           console.log("🎯 周辺の遊び場データ:", data);
 
-          // 🔄 既存マーカー削除
+          // 既存マーカー削除
           if (window.playgroundMarkers) {
             window.playgroundMarkers.forEach((m) => (m.map = null));
           }
           window.playgroundMarkers = [];
 
           if (Array.isArray(data) && data.length > 0) {
-            data.forEach((place) => {
-              if (!place.geometry || !place.geometry.location) return;
+            // ✅ 徒歩10分（約1km）以内のみに絞る
+            const nearby = data.filter((place) => {
+              if (!place.geometry?.location) return false;
+              const d = getDistanceFromLatLng(
+                lat,
+                lng,
+                place.geometry.location.lat,
+                place.geometry.location.lng
+              );
+              return d <= 1000; // 1km以内のみ
+            });
 
+            // ✅ 近い順にソート（★追加部分★）
+            const nearbySorted = nearby
+              .map((place) => {
+                const d = getDistanceFromLatLng(
+                  lat,
+                  lng,
+                  place.geometry.location.lat,
+                  place.geometry.location.lng
+                );
+                return { ...place, distance: d };
+              })
+              .sort((a, b) => a.distance - b.distance);
+
+            renderResultsList(nearbySorted);
+
+            // ✅ マーカー生成
+            nearbySorted.forEach((place) => {
               const position = {
                 lat: place.geometry.location.lat,
                 lng: place.geometry.location.lng,
               };
 
-              // ✅ マーカー設置
               const marker = new google.maps.marker.AdvancedMarkerElement({
                 map,
                 position,
                 title: place.name,
               });
 
-              // 🏷️ 吹き出しのHTML
               const photoHtml = place.photo_url
                 ? `<img src="${place.photo_url}" alt="${place.name}" class="w-full h-24 object-cover rounded mb-1">`
                 : "";
@@ -98,14 +120,13 @@ function initMap() {
                 `,
               });
 
-              marker.addListener("click", () => {
-                infoWindow.open(map, marker);
-              });
-
+              marker.addListener("click", () => infoWindow.open(map, marker));
               window.playgroundMarkers.push(marker);
             });
           } else {
             alert("近くに遊び場が見つかりませんでした。");
+            document.getElementById("results-container").innerHTML =
+              "<p class='text-center text-gray-500'>該当する遊び場はありません。</p>";
           }
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
@@ -114,26 +135,51 @@ function initMap() {
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            alert("位置情報の利用が拒否されました。");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            alert("位置情報を取得できませんでした（信号なし）。");
-            break;
-          case error.TIMEOUT:
-            alert("位置情報の取得がタイムアウトしました。");
-            break;
-          default:
-            alert("不明なエラーが発生しました。");
-        }
+        alert("位置情報を取得できませんでした。");
       },
       options
     );
   });
 }
 
-// ✅ Turbo対応（Railsで必須）
+// ✅ 徒歩距離計算（Haversine formula）
+function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
+  const R = 6371e3; // Earth radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) ** 2 +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // 距離（m）
+}
+
+// ✅ 一覧をレンダリング（距離付きに変更）
+function renderResultsList(data) {
+  const container = document.getElementById("results-container");
+  if (!container) return;
+
+  container.innerHTML = data
+    .map(
+      (p) => `
+      <div class="bg-white rounded-lg shadow p-3 border border-gray-100 hover:shadow-md transition">
+        <h3 class="font-bold text-gray-800">${p.name}</h3>
+        <p class="text-sm text-gray-600 mb-1">${p.address || "住所情報なし"}</p>
+        <p class="text-yellow-600 text-sm mb-1">⭐ ${p.rating || "評価なし"}</p>
+        <p class="text-gray-500 text-xs mb-1">🚶 ${(p.distance / 1000).toFixed(2)} km</p>
+        <a href="https://www.google.com/maps/place/?q=place_id:${p.place_id}"
+           target="_blank" class="text-blue-500 hover:underline text-sm">Googleマップで見る</a>
+      </div>
+    `
+    )
+    .join("");
+}
+
+// ✅ Turbo対応
 document.addEventListener("turbo:load", () => {
   console.log("⚡ turbo:load 発火");
   if (typeof google !== "undefined") {
@@ -143,5 +189,4 @@ document.addEventListener("turbo:load", () => {
   }
 });
 
-// ✅ グローバルで呼び出せるように
 window.initMap = initMap;
