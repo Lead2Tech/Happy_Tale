@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_10_24_034054) do
+ActiveRecord::Schema[7.1].define(version: 2025_10_27_074220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -44,7 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_10_24_034054) do
 
   create_table "diaries", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "playground_id", null: false
+    t.bigint "playground_id"
     t.string "title"
     t.text "content"
     t.datetime "visited_at"
