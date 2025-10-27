@@ -1,0 +1,26 @@
+<div class="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-amber-50 px-6 text-center">
+  <!-- 🌳 タイトル -->
+  <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+    遊び場を探す方法を選んでください
+  </h1>
+  <p class="text-gray-600 mb-10 text-base md:text-lg">
+    お好きな方法で、近くの遊び場や気になるスポットを検索できます。
+  </p>
+
+  <!-- 📍 ボタン群 -->
+  <div class="flex flex-col sm:flex-row gap-6 w-full max-w-xs sm:max-w-md">
+    <!-- 現在地から探す -->
+    <%= link_to "📍 現在地から探す", playgrounds_path(lat: "current", lng: "current"),
+      class: "w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-6 sm:py-8 rounded-2xl shadow-lg text-lg sm:text-xl transition transform hover:-translate-y-1 active:translate-y-0.5" %>
+
+    <!-- ワード検索 -->
+    <%= link_to "🔤 キーワードで探す", playgrounds_path,
+      class: "w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 sm:py-8 rounded-2xl shadow-lg text-lg sm:text-xl transition transform hover:-translate-y-1 active:translate-y-0.5" %>
+  </div>
+
+  <!-- 戻るボタン -->
+  <div class="mt-10">
+    <%= link_to "← トップに戻る", root_path,
+      class: "text-gray-500 hover:text-gray-700 text-sm md:text-base underline" %>
+  </div>
+</div>
