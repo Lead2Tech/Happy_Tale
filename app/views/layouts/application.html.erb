@@ -19,21 +19,21 @@
           <div class="font-bold text-2xl">🌳 Happy Tale</div>
 
           <ul class="hidden md:flex space-x-6 text-lg font-medium">
-            <li><%= link_to 'Home', root_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to 'Diaries', diaries_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to 'Playgrounds', playgrounds_path, class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to 'HOME', root_path, class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to '🔍遊び場を探す', playgrounds_path, class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to '📝思い出を残す', diaries_path, class: "hover:text-amber-100 transition-colors" %></li>
 
             <% if user_signed_in? %>
               <li>
-                <%= button_to 'Logout', destroy_user_session_path,
+                <%= button_to 'ログアウト', destroy_user_session_path,
                     method: :delete,
                     data: { turbo_confirm: "ログアウトしますか？" },
                     form: { class: "inline" },
                     class: "hover:text-amber-100 transition-colors bg-transparent border-none cursor-pointer" %>
               </li>
             <% else %>
-              <li><%= link_to 'Login', new_user_session_path, class: "hover:text-amber-100 transition-colors" %></li>
-              <li><%= link_to 'Sign Up', new_user_registration_path, class: "hover:text-amber-100 transition-colors" %></li>
+              <li><%= link_to 'ログイン', new_user_session_path, class: "hover:text-amber-100 transition-colors" %></li>
+              <li><%= link_to '新規登録', new_user_registration_path, class: "hover:text-amber-100 transition-colors" %></li>
             <% end %>
           </ul>
 
@@ -50,14 +50,14 @@
       <div id="mobile-menu" class="hidden md:hidden bg-amber-300 text-gray-800 px-6 pb-4 space-y-3">
         <%= link_to 'Home', root_path, class: "block hover:text-amber-600" %>
         <% if user_signed_in? %>
-          <%= button_to 'Logout', destroy_user_session_path,
+          <%= button_to 'ログアウト', destroy_user_session_path,
               method: :delete,
               data: { turbo_confirm: "ログアウトしますか？" },
               form: { class: "inline" },
               class: "block hover:text-amber-600 bg-transparent border-none cursor-pointer text-left w-full" %>
         <% else %>
-          <%= link_to 'Login', new_user_session_path, class: "block hover:text-amber-600" %>
-          <%= link_to 'Sign Up', new_user_registration_path, class: "block hover:text-amber-600" %>
+          <%= link_to 'ログイン', new_user_session_path, class: "block hover:text-amber-600" %>
+          <%= link_to '新規登録', new_user_registration_path, class: "block hover:text-amber-600" %>
         <% end %>
       </div>
     </nav>
