@@ -37,7 +37,7 @@ function initMap() {
         map.setCenter(currentPosition);
         map.setZoom(15);
 
-        // ✅ 現在地マーカー（AdvancedMarkerElement使用）
+        // ✅ 現在地マーカー（青丸）
         new google.maps.marker.AdvancedMarkerElement({
           map,
           position: currentPosition,
@@ -56,7 +56,7 @@ function initMap() {
 
           // 🔄 既存マーカー削除
           if (window.playgroundMarkers) {
-            window.playgroundMarkers.forEach((m) => m.map = null);
+            window.playgroundMarkers.forEach((m) => (m.map = null));
           }
           window.playgroundMarkers = [];
 
@@ -69,29 +69,29 @@ function initMap() {
                 lng: place.geometry.location.lng,
               };
 
-              // ✅ 遊び場マーカーをAdvancedMarkerElementで追加
+              // ✅ マーカー設置
               const marker = new google.maps.marker.AdvancedMarkerElement({
                 map,
                 position,
                 title: place.name,
               });
 
-              // 🏷️ 吹き出し情報
+              // 🏷️ 吹き出しのHTML
               const photoHtml = place.photo_url
                 ? `<img src="${place.photo_url}" alt="${place.name}" class="w-full h-24 object-cover rounded mb-1">`
                 : "";
 
               const ratingHtml = place.rating
                 ? `⭐ ${place.rating}（${place.user_ratings_total || 0}件）`
-                : "評価なし";
+                : "⭐ 評価なし";
 
               const infoWindow = new google.maps.InfoWindow({
                 content: `
                   <div style="max-width:230px">
-                    ${photoHtml}
                     <strong>${place.name}</strong><br>
-                    <small>${place.address || "住所情報なし"}</small><br>
                     <span>${ratingHtml}</span><br>
+                    <small>${place.address || "住所情報なし"}</small><br>
+                    ${photoHtml}
                     <a href="https://www.google.com/maps/place/?q=place_id:${place.place_id}"
                        target="_blank" class="text-blue-500 hover:underline">Googleマップで見る</a>
                   </div>
