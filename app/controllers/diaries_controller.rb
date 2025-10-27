@@ -11,12 +11,16 @@ class DiariesController < ApplicationController
 
   def create
     @diary = current_user.diaries.build(diary_params)
+    puts "🧭 DEBUG: params[:diary] = #{params[:diary].inspect}"
+    puts "🧭 DEBUG: diary_params = #{diary_params.inspect}"
+
     if @diary.save
       redirect_to diaries_path, notice: "🌱 日記を投稿しました！"
     else
-      render :new, status: :unprocessable_entity
+    render :new, status: :unprocessable_entity
     end
   end
+
 
   def edit; end
 
