@@ -7,15 +7,21 @@
         <div class="bg-white shadow-md rounded-xl p-6 text-left border border-gray-100 hover:shadow-lg transition">
           <h2 class="text-xl font-semibold text-gray-800 mb-2"><%= diary.title.presence || "（タイトルなし）" %></h2>
           <p class="text-gray-600 mb-4"><%= truncate(diary.content, length: 100) %></p>
+
+          <!-- ✅ 修正箇所：訪問日を表示 -->
           <div class="text-sm text-gray-400 mb-3">
-            投稿日：<%= diary.created_at.strftime('%Y/%m/%d') %>
+            訪問日：
+            <% if diary.visited_at.present? %>
+              <%= diary.visited_at.strftime('%Y/%m/%d') %>
+            <% else %>
+              不明
+            <% end %>
           </div>
 
           <div class="flex space-x-4">
             <%= link_to '👀 詳細', diary_path(diary), class: "text-blue-500 hover:underline" %>
             <%= link_to '✏️ 編集', edit_diary_path(diary), class: "text-amber-500 hover:underline" %>
             
-            <!-- ✅ Turbo対応版 削除リンク -->
             <%= button_to '🗑️ 削除', diary_path(diary),
                 method: :delete,
                 data: { action: "click->confirm#confirm", confirmMessageValue: "本当に削除しますか？" },
