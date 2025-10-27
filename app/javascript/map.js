@@ -124,9 +124,8 @@ function initMap() {
               window.playgroundMarkers.push(marker);
             });
           } else {
-            alert("近くに遊び場が見つかりませんでした。");
-            document.getElementById("results-container").innerHTML =
-              "<p class='text-center text-gray-500'>該当する遊び場はありません。</p>";
+            console.log("🎈 近くに遊び場データなし（表示はスキップ）");
+            // 表示やアラートは出さず、静かに処理を終える
           }
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
