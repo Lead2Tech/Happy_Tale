@@ -15,26 +15,12 @@ function initMap() {
   const resultsContainer = document.getElementById("results-container");
   if (!currentLocationBtn) return;
 
-  const loadingMessageContainer = currentLocationBtn.parentElement;
-
   // 📍 現在地ボタンがクリックされたとき
   currentLocationBtn.addEventListener("click", async () => {
     console.log("📍 ボタンがクリックされました！");
 
-    // ✅ ローディングメッセージを表示
-    let loadingMessage = document.getElementById("loading-message");
-    if (!loadingMessage) {
-      loadingMessage = document.createElement("p");
-      loadingMessage.id = "loading-message";
-      loadingMessage.className = "text-center text-gray-600 mt-3 animate-pulse";
-      loadingMessage.textContent =
-        "🌍 現在地を取得しています… マップが表示されるまで少しお待ちください。";
-      loadingMessageContainer.appendChild(loadingMessage);
-    }
-
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません。");
-      loadingMessage.remove();
       return;
     }
 
@@ -100,6 +86,9 @@ function initMap() {
                 map,
                 position,
                 title: place.name,
+                icon: {
+                  url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", // 赤ピン
+                },
               });
 
               const photoHtml = place.photo_url
@@ -136,14 +125,11 @@ function initMap() {
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
           alert("遊び場情報の取得に失敗しました。");
-        } finally {
-          if (loadingMessage) loadingMessage.remove();
         }
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
         alert("位置情報を取得できませんでした。");
-        if (loadingMessage) loadingMessage.remove();
       },
       options
     );
