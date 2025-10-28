@@ -1,0 +1,18 @@
+ja:
+  activerecord:
+    models:
+      diary: 日記
+    attributes:
+      diary:
+        title: タイトル
+        content: コメント
+    errors:
+      models:
+        diary:
+          attributes:
+            title:
+              blank: "を入力してください"
+            content:
+              blank: "を入力してください"
+  errors:
+    format: "%{attribute}%{message}"

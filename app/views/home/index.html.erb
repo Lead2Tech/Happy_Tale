@@ -13,22 +13,20 @@
     <%= link_to '🔍 遊び場を探す', playgrounds_search_mode_path,
         class: "relative z-10 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
 
-    <% if user_signed_in? %>
-      <%= link_to '📝 日記を記録する', new_diary_path,
+<% if user_signed_in? %>
+      <%= link_to '📝 思い出を残す', diaries_path,
           class: "relative z-10 bg-amber-300 hover:bg-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
     <% else %>
-      <%= link_to '📝 日記を記録する', new_user_session_path,
+      <%= link_to '📝 思い出を残す', new_user_session_path,
           data: { turbo: false },
           class: "relative z-10 bg-amber-300 hover:bg-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
     <% end %>
 
-    <% if user_signed_in? %>
-      <%= link_to '👤 マイページ', '#',
-          class: "relative z-10 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
-    <% else %>
-      <%= link_to '👤 ログイン / 新規登録', new_user_session_path,
-          data: { turbo: false },
-          class: "relative z-10 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
-    <% end %>
+
+     <% unless user_signed_in? %>
+        <%= link_to '👤 ログイン / 新規登録', new_user_session_path,
+            data: { turbo: false },
+            class: "relative z-10 bg-gray-700 hover:bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg w-full sm:w-56 mx-auto shadow-md transition" %>
+        <% end %>
   </div>
 </main>
