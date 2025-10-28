@@ -13,14 +13,22 @@ function initMap() {
 
   const currentLocationBtn = document.getElementById("current-location-btn");
   const resultsContainer = document.getElementById("results-container");
+  const statusMessage = document.getElementById("search-status-message");
   if (!currentLocationBtn) return;
 
   // 📍 現在地ボタンがクリックされたとき
   currentLocationBtn.addEventListener("click", async () => {
     console.log("📍 ボタンがクリックされました！");
 
+    // 🟡 検索開始メッセージを表示
+    if (statusMessage) {
+      statusMessage.textContent =
+        "🔍 現在地から遊び場を検索中です…（少し時間がかかる場合があります）";
+    }
+
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません。");
+      if (statusMessage) statusMessage.textContent = "";
       return;
     }
 
@@ -53,6 +61,12 @@ function initMap() {
           console.log("📡 API status:", res.status);
           const data = await res.json();
           console.log("🎯 周辺の遊び場データ:", data);
+
+          // ✅ 検索完了メッセージ
+          if (statusMessage) {
+            statusMessage.textContent = "✅ 検索が完了しました！";
+            setTimeout(() => (statusMessage.textContent = ""), 3000);
+          }
 
           // 既存マーカー削除
           if (window.playgroundMarkers) {
@@ -87,7 +101,7 @@ function initMap() {
                 position,
                 title: place.name,
                 icon: {
-                  url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", // 赤ピン
+                  url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
                 },
               });
 
@@ -125,25 +139,26 @@ function initMap() {
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
           alert("遊び場情報の取得に失敗しました。");
+          if (statusMessage) statusMessage.textContent = "";
         }
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
         alert("位置情報を取得できませんでした。");
+        if (statusMessage) statusMessage.textContent = "";
       },
       options
     );
   });
 }
 
-// ✅ 徒歩距離計算（Haversine formula）
+// ✅ 徒歩距離計算
 function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
   const R = 6371e3;
   const φ1 = (lat1 * Math.PI) / 180;
   const φ2 = (lat2 * Math.PI) / 180;
   const Δφ = ((lat2 - lat1) * Math.PI) / 180;
   const Δλ = ((lng2 - lng1) * Math.PI) / 180;
-
   const a =
     Math.sin(Δφ / 2) ** 2 +
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
@@ -151,7 +166,7 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
-// ✅ 一覧をレンダリング
+// ✅ 結果リスト
 function renderResultsList(data) {
   const container = document.getElementById("results-container");
   if (!container) return;
