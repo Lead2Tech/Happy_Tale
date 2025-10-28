@@ -19,11 +19,16 @@ class PlaygroundsController < ApplicationController
 
     puts "🌍 検索開始 (キャッシュなし: #{cache_key})"
 
-    # ✅ DB検索モード
-    db_results = Playground.where.not(lat: nil, lng: nil).select do |p|
-      distance = haversine_distance(lat.to_f, lng.to_f, p.lat, p.lng)
-      distance <= 2000
-    end
+    # ✅ DB検索モード（範囲絞り込みで高速化）
+    lat_f = lat.to_f
+    lng_f = lng.to_f
+
+    db_results = Playground
+      .where(lat: (lat_f - 0.02)..(lat_f + 0.02)) # 約2km四方
+      .where(lng: (lng_f - 0.02)..(lng_f + 0.02))
+      .select do |p|
+        haversine_distance(lat_f, lng_f, p.lat, p.lng) <= 2000 # 実際に2km以内だけ残す
+      end
 
     if db_results.present?
       puts "📦 DBデータ取得: #{db_results.size}件"
@@ -37,7 +42,7 @@ class PlaygroundsController < ApplicationController
       return render json: db_results
     end
 
-    # ✅ 開発モードのみAPIを使用
+    # ✅ 開発モードのみAPIを使用（DBデータがなかった場合）
     puts "🔍 Google API呼び出し開始"
     query = URI.encode_www_form_component("公園")
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{lat},#{lng}&radius=2000&keyword=#{query}&language=ja&key=#{ENV['GOOGLE_MAPS_API_KEY']}"

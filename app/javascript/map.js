@@ -32,7 +32,7 @@ function initMap() {
       return;
     }
 
-    const options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 };
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -144,7 +144,23 @@ function initMap() {
       },
       (error) => {
         console.error("❌ 位置情報エラー:", error);
-        alert("位置情報を取得できませんでした。");
+
+        let message;
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            message = "❌ 位置情報の利用が拒否されました。ブラウザの設定を確認してください。";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            message = "⚠️ 位置情報を取得できません（通信またはGPSの問題）。";
+            break;
+          case error.TIMEOUT:
+            message = "⏱ 位置情報の取得がタイムアウトしました。";
+            break;
+          default:
+            message = "❓ 不明なエラーが発生しました。";
+        }
+
+        alert(message);
         if (statusMessage) statusMessage.textContent = "";
       },
       options
@@ -166,7 +182,7 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
-// ✅ 結果リスト
+// ✅ 結果リスト描画
 function renderResultsList(data) {
   const container = document.getElementById("results-container");
   if (!container) return;
@@ -196,7 +212,7 @@ document.addEventListener("turbo:load", () => {
     } else {
       console.warn("⚠️ google undefined");
     }
-  }, 300); // ← 300ms待ってから初期化（描画完了を待つ）
+  }, 300);
 });
 
 window.initMap = initMap;
