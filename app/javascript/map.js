@@ -32,7 +32,9 @@ function initMap() {
       return;
     }
 
-    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+    // ✅ 現在地取得オプション（本番で安定しやすい設定）
+    const options = { enableHighAccuracy: false, timeout: 20000, maximumAge: 0 };
+
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
