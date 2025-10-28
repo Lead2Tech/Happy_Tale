@@ -187,14 +187,16 @@ function renderResultsList(data) {
     .join("");
 }
 
-// ✅ Turbo対応
+// ✅ Turbo対応（描画完了を少し待ってから実行）
 document.addEventListener("turbo:load", () => {
   console.log("⚡ turbo:load 発火");
-  if (typeof google !== "undefined") {
-    initMap();
-  } else {
-    console.warn("⚠️ google undefined");
-  }
+  setTimeout(() => {
+    if (typeof google !== "undefined") {
+      initMap();
+    } else {
+      console.warn("⚠️ google undefined");
+    }
+  }, 300); // ← 300ms待ってから初期化（描画完了を待つ）
 });
 
 window.initMap = initMap;
