@@ -9,4 +9,4 @@ services:
         value: production
     postDeployCommand: |
       bundle exec rails db:migrate &&
-      bundle exec rails playgrounds:fetch_tokyo RAILS_ENV=production
+      bundle exec rails db:seed RAILS_ENV=production
