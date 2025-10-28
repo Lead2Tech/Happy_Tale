@@ -21,4 +21,4 @@ module HappyTale
 end
 
 # ✅ 環境変数を読み込む（ここが大事！Applicationクラスの外）
-Dotenv::Railtie.load if defined?(Dotenv)
+Dotenv::Rails.load if defined?(Dotenv)
