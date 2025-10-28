@@ -32,9 +32,13 @@ function initMap() {
       return;
     }
 
-    // ✅ 現在地取得オプション（本番で安定しやすい設定）
-    const options = { enableHighAccuracy: false, timeout: 20000, maximumAge: 0 };
-
+    // ✅ 開発環境（localhost）では高精度ON、本番ではOFF
+    const isLocal = window.location.hostname === "localhost";
+    const options = {
+      enableHighAccuracy: isLocal,
+      timeout: 15000,
+      maximumAge: 0
+    };
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
