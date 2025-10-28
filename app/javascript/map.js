@@ -203,16 +203,20 @@ function renderResultsList(data) {
     .join("");
 }
 
-// ✅ Turbo対応（描画完了を少し待ってから実行）
+// ✅ Turbo対応（描画完了を十分待ってから実行）
 document.addEventListener("turbo:load", () => {
   console.log("⚡ turbo:load 発火");
   setTimeout(() => {
     if (typeof google !== "undefined") {
       initMap();
     } else {
-      console.warn("⚠️ google undefined");
+      console.warn("⚠️ google undefined（再試行）");
+      // Google Mapsの読み込みが遅れた場合のリトライ処理
+      setTimeout(() => {
+        if (typeof google !== "undefined") initMap();
+      }, 1000);
     }
-  }, 300);
+  }, 1000);
 });
 
 window.initMap = initMap;

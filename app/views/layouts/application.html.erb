@@ -1,100 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HappyTale</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
-
-    <!-- ✅ TailwindCSS -->
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
-    <%= javascript_importmap_tags %>
-  </head>
-
-  <body class="bg-gray-50 text-gray-800">
-    <!-- 🌳 ナビゲーションバー -->
-    <nav class="bg-amber-400 text-white shadow-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="font-bold text-2xl">🌳 Happy Tale</div>
-
-          <ul class="hidden md:flex space-x-6 text-lg font-medium">
-            <li><%= link_to 'HOME', root_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to '🔍遊び場を探す', playgrounds_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to '📝思い出を残す', diaries_path, class: "hover:text-amber-100 transition-colors" %></li>
-
-            <% if user_signed_in? %>
-              <li>
-                <%= button_to 'ログアウト', destroy_user_session_path,
-                    method: :delete,
-                    data: { turbo_confirm: "ログアウトしますか？" },
-                    form: { class: "inline" },
-                    class: "hover:text-amber-100 transition-colors bg-transparent border-none cursor-pointer" %>
-              </li>
-            <% else %>
-              <li><%= link_to 'ログイン', new_user_session_path, class: "hover:text-amber-100 transition-colors" %></li>
-              <li><%= link_to '新規登録', new_user_registration_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <% end %>
-          </ul>
-
-          <button id="menu-btn" class="md:hidden focus:outline-none">
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- モバイルメニュー -->
-      <div id="mobile-menu" class="hidden md:hidden bg-amber-300 text-gray-800 px-6 pb-4 space-y-3">
-        <%= link_to 'Home', root_path, class: "block hover:text-amber-600" %>
-        <% if user_signed_in? %>
-          <%= button_to 'ログアウト', destroy_user_session_path,
-              method: :delete,
-              data: { turbo_confirm: "ログアウトしますか？" },
-              form: { class: "inline" },
-              class: "block hover:text-amber-600 bg-transparent border-none cursor-pointer text-left w-full" %>
-        <% else %>
-          <%= link_to 'ログイン', new_user_session_path, class: "block hover:text-amber-600" %>
-          <%= link_to '新規登録', new_user_registration_path, class: "block hover:text-amber-600" %>
-        <% end %>
-      </div>
-    </nav>
-
-    <!-- 🌟 フラッシュメッセージ -->
-    <div class="text-center mt-4">
-      <p class="notice text-green-600 font-semibold"><%= notice %></p>
-      <p class="alert text-red-600 font-semibold"><%= alert %></p>
-    </div>
-
-    <!-- 🌿 メインコンテンツ -->
-    <%= yield %>
-
-    <!-- 📱 ハンバーガーメニュー開閉 -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (menuBtn && mobileMenu) {
-          menuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-          });
-        }
-      });
-    </script>
-
-    <!-- ✅ map.js（initMap含む）を先に読み込む -->
-    <%= javascript_include_tag "map", "data-turbo-track": "reload" %>
-
-    <!-- ✅ Google Maps API を後で読み込み（callback指定） -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker"
-      async
-      defer>
-    </script>
-
-    <!-- ✅ Turbo対応で確実に初期化 -->
+    <!-- ✅ Turbo用フォールバック（Google Maps遅延対策） -->
     <script>
       document.addEventListener("turbo:load", () => {
         console.log("⚡ Turbo load detected from layout");
@@ -103,16 +7,33 @@
             console.log("🗺️ Initializing map after Turbo load");
             initMap();
           } else {
-            console.warn("⚠️ Google Maps not ready, waiting...");
+            console.warn("⚠️ Google Maps not ready, retrying...");
             setTimeout(() => {
               if (typeof google !== "undefined" && typeof initMap === "function") {
+                console.log("✅ Retried initMap successfully");
                 initMap();
               }
             }, 1000);
           }
-        }, 300);
+        }, 800);
       });
     </script>
 
+    <!-- 🚨 Google Maps 読み込み失敗時のフォールバック -->
+    <script>
+      window.addEventListener("error", (e) => {
+        if (e.target.tagName === "SCRIPT" && e.target.src.includes("maps.googleapis.com")) {
+          console.error("❌ Google Maps の読み込みに失敗しました。APIキーやネットワークを確認してください。");
+          const mapDiv = document.getElementById("map");
+          if (mapDiv) {
+            mapDiv.innerHTML = `
+              <p class="text-center text-red-600 mt-6 font-semibold">
+                Googleマップの読み込みに失敗しました。再読み込みしてください。
+              </p>
+            `;
+          }
+        }
+      }, true);
+    </script>
   </body>
 </html>
