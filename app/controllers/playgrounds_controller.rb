@@ -41,15 +41,26 @@ class PlaygroundsController < ApplicationController
             "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=#{photo_ref}&key=#{ENV['GOOGLE_MAPS_API_KEY']}"
           end
 
+          # ✅ geometryではなくlat/lngを直接格納
           results << {
             name: r["name"],
             address: r["vicinity"],
             rating: r["rating"],
             user_ratings_total: r["user_ratings_total"],
             photo_url: photo_url,
-            geometry: r["geometry"],
+            lat: r.dig("geometry", "location", "lat"),
+            lng: r.dig("geometry", "location", "lng"),
             place_id: r["place_id"]
           }
+
+          # ✅ DBにも保存（重複はスキップ）
+          Playground.find_or_create_by(place_id: r["place_id"]) do |pg|
+            pg.name = r["name"]
+            pg.address = r["vicinity"]
+            pg.rating = r["rating"]
+            pg.lat = r.dig("geometry", "location", "lat")
+            pg.lng = r.dig("geometry", "location", "lng")
+          end
         end
       rescue => e
         Rails.logger.error "❌ Google APIエラー（#{word}）: #{e.message}"

@@ -6,29 +6,27 @@ function initMap() {
   if (!mapDiv) return;
 
   const map = new google.maps.Map(mapDiv, {
-    center: { lat: 35.681236, lng: 139.767125 },
+    center: { lat: 35.681236, lng: 139.767125 }, // 東京駅
     zoom: 10,
     mapId: "DEMO_MAP_ID",
   });
 
   const currentLocationBtn = document.getElementById("current-location-btn");
   const resultsContainer = document.getElementById("results-container");
-
-  // 🟡 新しい表示位置（ボタン下に出したいので取得）
-  const loadingMessageContainer = currentLocationBtn.parentElement;
   if (!currentLocationBtn) return;
+
+  const loadingMessageContainer = currentLocationBtn.parentElement;
 
   // 📍 現在地ボタンがクリックされたとき
   currentLocationBtn.addEventListener("click", async () => {
     console.log("📍 ボタンがクリックされました！");
 
-    // ✅ ボタン下にローディングメッセージ表示
+    // ✅ ローディングメッセージを表示
     let loadingMessage = document.getElementById("loading-message");
     if (!loadingMessage) {
       loadingMessage = document.createElement("p");
       loadingMessage.id = "loading-message";
-      loadingMessage.className =
-        "text-center text-gray-600 mt-3 animate-pulse";
+      loadingMessage.className = "text-center text-gray-600 mt-3 animate-pulse";
       loadingMessage.textContent =
         "🌍 現在地を取得しています… マップが表示されるまで少しお待ちください。";
       loadingMessageContainer.appendChild(loadingMessage);
@@ -57,9 +55,7 @@ function initMap() {
           map,
           position: currentPosition,
           title: "あなたの現在地",
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-          },
+          icon: { url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png" },
         });
 
         // ✅ Rails API呼び出し
@@ -81,25 +77,15 @@ function initMap() {
           if (Array.isArray(data) && data.length > 0) {
             // ✅ 徒歩10分（約1km）以内に絞る
             const nearby = data.filter((place) => {
-              if (!place.geometry?.location) return false;
-              const d = getDistanceFromLatLng(
-                lat,
-                lng,
-                place.geometry.location.lat,
-                place.geometry.location.lng
-              );
+              if (!place.lat || !place.lng) return false;
+              const d = getDistanceFromLatLng(lat, lng, place.lat, place.lng);
               return d <= 1000;
             });
 
             // ✅ 近い順にソート
             const nearbySorted = nearby
               .map((place) => {
-                const d = getDistanceFromLatLng(
-                  lat,
-                  lng,
-                  place.geometry.location.lat,
-                  place.geometry.location.lng
-                );
+                const d = getDistanceFromLatLng(lat, lng, place.lat, place.lng);
                 return { ...place, distance: d };
               })
               .sort((a, b) => a.distance - b.distance);
@@ -108,10 +94,7 @@ function initMap() {
 
             // ✅ マーカー生成（赤ピン）
             nearbySorted.forEach((place) => {
-              const position = {
-                lat: place.geometry.location.lat,
-                lng: place.geometry.location.lng,
-              };
+              const position = { lat: place.lat, lng: place.lng };
 
               const marker = new google.maps.Marker({
                 map,
@@ -179,7 +162,6 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
     Math.sin(Δφ / 2) ** 2 +
     Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
   return R * c;
 }
 
