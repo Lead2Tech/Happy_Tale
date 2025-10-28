@@ -84,14 +84,34 @@
       });
     </script>
 
-    <!-- ✅ map.jsを先に読み込む（initMapを定義） -->
+    <!-- ✅ map.js（initMap含む）を先に読み込む -->
     <%= javascript_include_tag "map", "data-turbo-track": "reload" %>
 
-    <!-- ✅ その後でGoogle Maps APIを読み込む（callbackでinitMapを呼ぶ） -->
+    <!-- ✅ Google Maps API を後で読み込み（callback指定） -->
     <script
-     src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker"
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker"
       async
       defer>
+    </script>
+
+    <!-- ✅ Turbo対応で確実に初期化 -->
+    <script>
+      document.addEventListener("turbo:load", () => {
+        console.log("⚡ Turbo load detected from layout");
+        setTimeout(() => {
+          if (typeof google !== "undefined" && typeof initMap === "function") {
+            console.log("🗺️ Initializing map after Turbo load");
+            initMap();
+          } else {
+            console.warn("⚠️ Google Maps not ready, waiting...");
+            setTimeout(() => {
+              if (typeof google !== "undefined" && typeof initMap === "function") {
+                initMap();
+              }
+            }, 1000);
+          }
+        }, 300);
+      });
     </script>
 
   </body>
