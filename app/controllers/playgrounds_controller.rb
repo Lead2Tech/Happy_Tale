@@ -19,24 +19,14 @@ class PlaygroundsController < ApplicationController
 
     puts "🌍 APIリクエスト開始 (キャッシュなし: #{cache_key})"
 
-    keywords = [
-      "子供 遊び場",
-      "公園",
-      "水族館",
-      "動物園",
-      "遊園地",
-      "玩具屋さん",
-      "park",
-      "zoo",
-      "playground",
-      "theme park"
-    ]
+    # 🎯 メモリ最適化：キーワードを「公園」のみに限定
+    keywords = ["公園"]
 
     results = []
 
     keywords.each do |word|
       query = URI.encode_www_form_component(word)
-      url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{lat},#{lng}&radius=1000&keyword=#{query}&language=ja&key=#{ENV['GOOGLE_MAPS_API_KEY']}"
+      url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=#{lat},#{lng}&radius=2000&keyword=#{query}&language=ja&key=#{ENV['GOOGLE_MAPS_API_KEY']}"
 
       begin
         response = URI.parse(url).open.read
@@ -45,7 +35,6 @@ class PlaygroundsController < ApplicationController
 
         next unless data["results"].present?
 
-        # ✅ 詳細API呼び出しを削除（メモリ負荷軽減）
         data["results"].each do |r|
           photo_ref = r.dig("photos", 0, "photo_reference")
           photo_url = if photo_ref
@@ -62,7 +51,6 @@ class PlaygroundsController < ApplicationController
             place_id: r["place_id"]
           }
         end
-
       rescue => e
         Rails.logger.error "❌ Google APIエラー（#{word}）: #{e.message}"
       end
@@ -70,8 +58,8 @@ class PlaygroundsController < ApplicationController
 
     unique_results = results.uniq { |r| r[:place_id] }
 
-    # ✅ キャッシュに保存（24時間有効）
-    Rails.cache.write(cache_key, unique_results, expires_in: 24.hours)
+    # ✅ キャッシュを72時間保持（再呼び出し抑制）
+    Rails.cache.write(cache_key, unique_results, expires_in: 72.hours)
     puts "💾 キャッシュ保存完了 (#{cache_key})"
 
     render json: unique_results
