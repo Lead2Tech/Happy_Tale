@@ -36,7 +36,7 @@ function initMap() {
     const isLocal = window.location.hostname === "localhost";
     const options = {
       enableHighAccuracy: isLocal,
-      timeout: 15000,
+      timeout: 30000,
       maximumAge: 0
     };
 
