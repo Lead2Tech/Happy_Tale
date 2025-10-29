@@ -20,7 +20,7 @@
 
           <ul class="hidden md:flex space-x-6 text-lg font-medium">
             <li><%= link_to 'HOME', root_path, class: "hover:text-amber-100 transition-colors" %></li>
-            <li><%= link_to '🔍遊び場を探す', playgrounds_path, class: "hover:text-amber-100 transition-colors" %></li>
+            <li><%= link_to '🔍遊び場を探す', playgrounds_search_mode_path, class: "hover:text-amber-100 transition-colors" %></li>
             <li><%= link_to '📝思い出を残す', diaries_path, class: "hover:text-amber-100 transition-colors" %></li>
 
             <% if user_signed_in? %>
