@@ -28,6 +28,7 @@ class PlaygroundsController < ApplicationController
     # ✅ DB検索時間計測
     db_start = Time.current
     db_results = Playground
+      .where.not(lat: nil, lng: nil)
       .where(lat: (lat_f - 0.02)..(lat_f + 0.02))
       .where(lng: (lng_f - 0.02)..(lng_f + 0.02))
       .select do |p|
@@ -36,18 +37,33 @@ class PlaygroundsController < ApplicationController
     db_end = Time.current
     puts "📦 DB検索時間: #{(db_end - db_start).round(2)}秒 / 結果: #{db_results.size}件"
 
+    # ✅ DBデータがある場合 → JSONで返す
     if db_results.present?
-      Rails.cache.write(cache_key, db_results, expires_in: 72.hours)
+      json_results = db_results.map do |p|
+        {
+          id: p.id,
+          name: p.name,
+          address: p.address,
+          rating: p.rating,
+          lat: p.lat,
+          lng: p.lng,
+          place_id: p.place_id,
+          photo_url: p.respond_to?(:photo_url) ? p.photo_url : nil,
+          user_ratings_total: p.respond_to?(:user_ratings_total) ? p.user_ratings_total : nil
+        }
+      end
+
+      Rails.cache.write(cache_key, json_results, expires_in: 72.hours)
       puts "✅ DB結果をキャッシュ保存しました（#{cache_key}）"
       puts "⏱ 全体処理時間: #{(Time.current - start_time).round(2)}秒"
-      return render json: db_results
+      return render json: json_results
     end
 
     # ✅ 本番モードではAPI呼び出ししない
     if ENV["PLAYGROUND_MODE"] == "db_only"
       puts "🚫 本番モード：Google API呼び出しをスキップ"
       puts "⏱ 全体処理時間: #{(Time.current - start_time).round(2)}秒"
-      return render json: db_results
+      return render json: []
     end
 
     # ✅ API呼び出し時間計測
