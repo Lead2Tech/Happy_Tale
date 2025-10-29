@@ -1,18 +1,24 @@
 // ✅ Google Map初期化関数
 function initMap() {
   console.log("✅ Google Map initialized!");
-
   const mapDiv = document.getElementById("map");
   if (!mapDiv) {
     console.warn("⚠️ #map が見つかりません。ページを確認してください。");
     return;
   }
 
-  const map = new google.maps.Map(mapDiv, {
+  // Google Map インスタンスをグローバル変数に保持
+  window.map = new google.maps.Map(mapDiv, {
     center: { lat: 35.681236, lng: 139.767125 }, // 東京駅
     zoom: 10,
     mapId: "DEMO_MAP_ID",
   });
+  console.log("🗺️ Map オブジェクト初期化完了");
+}
+
+// ✅ Turbo対応：現在地ボタンイベント
+document.addEventListener("turbo:load", () => {
+  console.log("⚡ turbo:load 発火");
 
   const currentLocationBtn = document.getElementById("current-location-btn");
   const resultsContainer = document.getElementById("results-container");
@@ -23,21 +29,28 @@ function initMap() {
     return;
   }
 
-  // 📍 現在地ボタンがクリックされたとき
-  currentLocationBtn.addEventListener("click", async () => {
-    console.log("📍 ボタンがクリックされました！");
+  // イベントが重複しないよう一旦リスナー削除
+  currentLocationBtn.replaceWith(currentLocationBtn.cloneNode(true));
+  const newBtn = document.getElementById("current-location-btn");
+
+  newBtn.addEventListener("click", async () => {
+    console.log("📍 ボタンがクリックされました！（Turbo対応）");
+
+    if (!window.map) {
+      console.warn("⚠️ map 未初期化 → initMap 呼び出し");
+      initMap();
+    }
 
     if (statusMessage) {
-      statusMessage.textContent = "🔍 現在地から遊び場を検索中です…";
+      statusMessage.textContent = "🔍 現在地から遊び場を検索中です…（数秒かかる場合があります）";
     }
 
     if (!navigator.geolocation) {
       alert("このブラウザでは位置情報が利用できません。");
-      statusMessage.textContent = "";
+      if (statusMessage) statusMessage.textContent = "";
       return;
     }
 
-    // ✅ 環境によって精度・タイムアウト調整
     const isLocal = window.location.hostname === "localhost";
     const options = {
       enableHighAccuracy: isLocal,
@@ -51,23 +64,24 @@ function initMap() {
         console.log("✅ 現在地取得:", lat, lng);
 
         const currentPosition = { lat, lng };
-        map.setCenter(currentPosition);
-        map.setZoom(15);
+        window.map.setCenter(currentPosition);
+        window.map.setZoom(15);
 
-        // ✅ 現在地マーカー（青丸）
+        // ✅ 青い現在地マーカー
         new google.maps.Marker({
-          map,
+          map: window.map,
           position: currentPosition,
           title: "あなたの現在地",
           icon: { url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png" },
         });
 
-        // ✅ Rails API呼び出し
+        // ✅ Rails API呼び出し（DBの遊び場データ取得）
         const url = `/playgrounds/nearby?lat=${lat}&lng=${lng}`;
         console.log("🌐 Fetching:", url);
 
         try {
           const res = await fetch(url);
+          console.log("📡 API status:", res.status);
           const data = await res.json();
           console.log("🎯 周辺データ取得:", data);
 
@@ -96,7 +110,7 @@ function initMap() {
             // ✅ 赤ピンマーカー追加
             nearby.forEach((place) => {
               const marker = new google.maps.Marker({
-                map,
+                map: window.map,
                 position: { lat: place.lat, lng: place.lng },
                 title: place.name,
                 icon: { url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png" },
@@ -119,7 +133,7 @@ function initMap() {
                 `,
               });
 
-              marker.addListener("click", () => infoWindow.open(map, marker));
+              marker.addListener("click", () => infoWindow.open(window.map, marker));
               window.playgroundMarkers.push(marker);
             });
           } else {
@@ -129,7 +143,7 @@ function initMap() {
         } catch (err) {
           console.error("❌ Fetchエラー:", err);
           alert("遊び場情報の取得に失敗しました。");
-          statusMessage.textContent = "";
+          if (statusMessage) statusMessage.textContent = "";
         }
       },
       (error) => {
@@ -138,19 +152,19 @@ function initMap() {
         const messages = {
           [error.PERMISSION_DENIED]: "❌ 位置情報の利用が拒否されました。設定をご確認ください。",
           [error.POSITION_UNAVAILABLE]: "⚠️ 位置情報を取得できません（通信またはGPSの問題）。",
-          [error.TIMEOUT]: "⏱ 位置情報の取得がタイムアウトしました。電波状況をご確認ください。",
+          [error.TIMEOUT]: "⏱ 位置情報の取得がタイムアウトしました。",
           default: "❓ 不明なエラーが発生しました。",
         };
 
         alert(messages[error.code] || messages.default);
-        statusMessage.textContent = "";
+        if (statusMessage) statusMessage.textContent = "";
       },
       options
     );
   });
-}
+});
 
-// ✅ 距離計算
+// ✅ 距離計算関数
 function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
   const R = 6371e3;
   const φ1 = (lat1 * Math.PI) / 180;
@@ -164,7 +178,7 @@ function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
   return R * c;
 }
 
-// ✅ 結果リスト描画
+// ✅ 結果リスト描画関数
 function renderResultsList(data) {
   const container = document.getElementById("results-container");
   if (!container) return;
@@ -184,28 +198,5 @@ function renderResultsList(data) {
     .join("");
 }
 
-// ✅ Turbo対応
-document.addEventListener("turbo:load", () => {
-  console.log("⚡ turbo:load 発火");
-  setTimeout(() => {
-    if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
-      console.log("✅ google.maps ready → initMap()");
-      initMap();
-    } else {
-      console.warn("⚠️ google 未定義 → 待機再試行");
-      let retries = 0;
-      const waitGoogle = setInterval(() => {
-        if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
-          console.log("✅ Google Maps ロード完了 → initMap()");
-          initMap();
-          clearInterval(waitGoogle);
-        } else if (retries++ > 10) {
-          console.error("❌ Google Maps 初期化失敗");
-          clearInterval(waitGoogle);
-        }
-      }, 500);
-    }
-  }, 300);
-});
-
+// ✅ Google Maps callback 用
 window.initMap = initMap;
