@@ -92,29 +92,5 @@
       src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker">
     </script>
 
-    <!-- ✅ Turbo対応（Googleロード遅延時も再試行） -->
-    <script>
-      document.addEventListener("turbo:load", () => {
-        console.log("⚡ Turbo load detected from layout");
-        let retry = 0;
-
-        const initWhenReady = () => {
-          if (typeof google !== "undefined" && typeof initMap === "function") {
-            console.log("🗺️ Google Maps ready → initMap 実行");
-            initMap();
-          } else if (retry < 8) {
-            retry++;
-            console.warn(`⏳ Google Mapsロード待機中... (${retry})`);
-            setTimeout(initWhenReady, 700);
-          } else {
-            console.error("❌ Google Maps の初期化に失敗しました");
-          }
-        };
-
-        // 初期呼び出し
-        setTimeout(initWhenReady, 300);
-      });
-    </script>
-
   </body>
 </html>

@@ -214,7 +214,12 @@ document.addEventListener("turbo:load", () => {
   console.log("⚡ turbo:load 発火");
   setTimeout(() => {
     if (typeof google !== "undefined") {
-      initMap();
+      if (!window.mapInitialized) {           // ← 初期化済みフラグチェック
+        window.mapInitialized = true;         // ← フラグをセット
+        initMap();                            // ← 初回だけ実行
+      } else {
+        console.log("✅ Map already initialized — skip duplicate init");
+      }
     } else {
       console.warn("⚠️ google undefined");
     }
