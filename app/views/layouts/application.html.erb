@@ -87,6 +87,7 @@
 
     <!-- ✅ Google Maps API を非同期＋defer付きでロード -->
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=marker"></script>
 
 
     <!-- ✅ Turbo対応（Googleロード遅延時も再試行） -->
