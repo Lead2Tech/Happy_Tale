@@ -22,6 +22,7 @@ services:
     environment:
       RAILS_ENV: development
       DATABASE_URL: postgres://postgres:password@db:5432/happy_tale_development
+      GOOGLE_MAPS_API_KEY: "AIzaSyA-np2Y5DxjWAGJkwxEz8h_0MTn8oJu5gk"  # ←✅これ追加
     depends_on:
       - db
 
