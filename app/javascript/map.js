@@ -1,4 +1,8 @@
-// ✅ Google Map初期化関数
+// ✅ Turbo対応でマップを再初期化する
+document.addEventListener("turbo:load", initMap);
+document.addEventListener("turbo:render", initMap);
+
+// ✅ Google Map初期化関数（1つだけ）
 function initMap() {
   console.log("✅ Google Map initialized!");
   const mapDiv = document.getElementById("map");
