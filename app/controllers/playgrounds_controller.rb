@@ -10,7 +10,7 @@ class PlaygroundsController < ApplicationController
     lng = params[:lng]
     return render json: { error: "位置情報がありません" }, status: 400 unless lat && lng
 
-    cache_key = "playgrounds_db_#{lat.to_f.round(2)}_#{lng.to_f.round(2)}"
+    cache_key = "playgrounds_db_#{lat}_#{lng}"
 
     # ✅ キャッシュ確認
     if Rails.cache.exist?(cache_key)
@@ -20,26 +20,26 @@ class PlaygroundsController < ApplicationController
       return render json: cached
     end
 
-    puts "🌍 キャッシュなし → DB検索開始"
-
+    # ✅ 現在地から半径2km以内に絞り込み
     lat_f = lat.to_f
     lng_f = lng.to_f
+    radius_m = 1200.0 # ← 徒歩圏内
 
-    # ✅ DB検索時間計測
-    db_start = Time.current
-    db_results = Playground
-      .where.not(lat: nil, lng: nil)
-      .where(lat: (lat_f - 0.02)..(lat_f + 0.02))
-      .where(lng: (lng_f - 0.02)..(lng_f + 0.02))
-      .select do |p|
-        haversine_distance(lat_f, lng_f, p.lat, p.lng) <= 2000
-      end
-    db_end = Time.current
-    puts "📦 DB検索時間: #{(db_end - db_start).round(2)}秒 / 結果: #{db_results.size}件"
+    nearby = Playground.all.select do |p|
+      next false unless p.lat.present? && p.lng.present?
+      distance = haversine_distance(lat_f, lng_f, p.lat.to_f, p.lng.to_f)
+      distance <= radius_m
+    end
+
+    puts "📍 検出件数: #{nearby.size}件"
+
+    nearby.each do |p|
+      puts "  - #{p.name}: #{haversine_distance(lat_f, lng_f, p.lat.to_f, p.lng.to_f).round} m"
+    end
 
     # ✅ DBデータがある場合 → JSONで返す
-    if db_results.present?
-      json_results = db_results.map do |p|
+    if nearby.present?
+      json_results = nearby.map do |p|
         {
           id: p.id,
           name: p.name,

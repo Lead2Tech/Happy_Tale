@@ -106,7 +106,7 @@ document.addEventListener("turbo:load", () => {
                 const d = getDistanceFromLatLng(lat, lng, place.lat, place.lng);
                 return { ...place, distance: d };
               })
-              .filter((p) => p.distance <= 1000)
+              .filter((p) => p.distance <= 1200)
               .sort((a, b) => a.distance - b.distance);
 
             renderResultsList(nearby);
