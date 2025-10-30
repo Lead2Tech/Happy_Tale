@@ -84,9 +84,6 @@
       });
     </script>
 
-    <!-- ✅ map.js（initMap含む）を先に読み込む -->
-    <%= javascript_include_tag "map", "data-turbo-track": "reload" %>
-
     <!-- ✅ Google Maps API を非同期＋defer付きでロード -->
     <script async defer
       src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap&libraries=marker">
