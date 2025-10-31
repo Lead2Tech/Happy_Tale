@@ -9,7 +9,7 @@
     <!-- ✅ TailwindCSS -->
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
     <%= javascript_importmap_tags %>
-    <%= javascript_import_module_tag "map" %> <!-- ✅ map.js を読み込む -->
+    
   </head>
 
   <body class="bg-gray-50 text-gray-800">
@@ -113,5 +113,6 @@
       });
     </script>
 
+    <%= javascript_import_module_tag "map" %> <!-- ✅ map.js を読み込む -->
   </body>
 </html>
