@@ -1,7 +1,6 @@
 {
   "imports": {
     "application": "/assets/application.js",
-    "@hotwired/turbo-rails": "/assets/turbo.min.js",
-    "map": "/assets/map.js"
+    "@hotwired/turbo-rails": "/assets/turbo.min.js"
   }
 }
