@@ -9,7 +9,7 @@
     <!-- ✅ TailwindCSS -->
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
     <%= javascript_importmap_tags %>
-    <%= javascript_include_tag "map", Rails.env.production? ? { "data-turbo-track": "reload" } : {} %>
+    <%= javascript_include_tag "map", Rails.env.production? ? { "data-turbo-track": "reload", defer: true } : { defer: true } %>
   </head>
 
   <body class="bg-gray-50 text-gray-800">
