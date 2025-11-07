@@ -8,7 +8,6 @@
 
     <!-- ✅ TailwindCSS -->
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
-    <%= javascript_importmap_tags %>
     <%= javascript_include_tag "map", "data-turbo-track": "reload", crossorigin: "anonymous" %>
   </head>
 
@@ -113,6 +112,7 @@
       });
     </script>
 
-
+    <!-- ✅ JSはbodyの最後で読み込む -->
+    <%= javascript_importmap_tags %>
   </body>
 </html>
