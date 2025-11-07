@@ -84,7 +84,8 @@ document.addEventListener("turbo:load", () => {
         console.log("🌐 Fetching:", url);
 
         try {
-          const res = await fetch(url);
+          const res = await fetch(url, { headers: { "Accept": "application/json" } });
+
           console.log("📡 API status:", res.status);
           const data = await res.json();
           console.log("🎯 周辺データ取得:", data);
