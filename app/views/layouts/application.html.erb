@@ -8,7 +8,7 @@
 
     <!-- ✅ TailwindCSS -->
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", media: "all" %>
-    <%= javascript_include_tag "map", "data-turbo-track": "reload", crossorigin: "anonymous" %>
+    <%= javascript_import_module_tag "map" %>
   </head>
 
   <body class="bg-gray-50 text-gray-800">
