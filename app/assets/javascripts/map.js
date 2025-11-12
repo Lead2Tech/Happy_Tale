@@ -1,3 +1,6 @@
+// ※ 現在は app/assets/javascripts/map.js を使用中（Sprockets対応）こちら使用中
+
+
 // ✅ Turbo対応でマップを再初期化する
 document.addEventListener("turbo:load", initMap);
 document.addEventListener("turbo:render", initMap);
