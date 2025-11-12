@@ -1,4 +1,4 @@
 # config/importmap.rb
 pin "application", preload: true
 pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true
-pin "map", to: "map.js", preload: true  # ✅ ここに preload: true を追加
+pin "map", to: "map.js"
