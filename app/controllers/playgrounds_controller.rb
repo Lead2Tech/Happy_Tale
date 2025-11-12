@@ -2,6 +2,8 @@ require "json"
 require "open-uri"
 
 class PlaygroundsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:nearby]
+  
   def nearby
     start_time = Time.current
     puts "🚀 [Start] playgrounds#nearby"
