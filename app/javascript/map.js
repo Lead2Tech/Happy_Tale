@@ -60,9 +60,9 @@ document.addEventListener("turbo:load", () => {
 
     const isLocal = window.location.hostname === "localhost";
     const options = {
-      enableHighAccuracy: isLocal,
-      timeout: isLocal ? 15000 : 20000,
-      maximumAge: 0,
+      enableHighAccuracy: true,
+      timeout: isLocal ? 20000 : 40000,
+      maximumAge: 60000,
     };
 
     navigator.geolocation.getCurrentPosition(
